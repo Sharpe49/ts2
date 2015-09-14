@@ -22,8 +22,15 @@ import random
 
 from Qt import QtCore
 
+## Why not inbuilt json ? see some issue
+import simplejson
+
 TS2_VERSION = "0.6"
 TS2_FILE_FORMAT = 0.6
+
+## TODO maybe this be somewhere else
+import ts2.xobjects.xsettings
+settings = ts2.xobjects.xsettings.XSettings()
 
 
 class Context:
@@ -100,3 +107,32 @@ class DurationProba(QtCore.QObject):
         r1 = random.random()
         low, high, prob = self._probaList[seg]
         return r1 * (high - low) + low
+
+##==============================================
+
+
+def to_json(data):
+    """Serialize data to a json string BUT indented, and sort_kes so is versionable.ish
+
+    .. important:: Its advised to use this function as its is indented and sorted and therefore
+                   a consistent output. This is for git and versioning reasons, ie less deltas.
+    """
+    return simplejson.dumps(data, indent=4, sort_keys=True)
+
+def from_json(json_str):
+    """Load data from a json string"""
+    return simplejson.loads(json_str)
+
+
+def write_file(file_path, contents):
+    """Writes to a file"""
+    with open(file_path, "w") as f:
+        f.write(contents)
+        f.close()
+
+def read_file(file_path):
+    """Reads from a file"""
+    with open(file_path, "r") as f:
+        contents = f.read()
+        f.close()
+        return contents

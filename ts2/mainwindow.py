@@ -22,32 +22,47 @@ import zipfile
 from Qt import QtCore, QtGui, QtWidgets, Qt
 
 from ts2 import simulation, utils
+from ts2.utils import settings
 from ts2.gui import dialogs, trainlistview, servicelistview, widgets
 from ts2.scenery import placeitem
 from ts2.editor import editorwindow
 
 
 class MainWindow(QtWidgets.QMainWindow):
-    """ TODO Document MainWindow Class"""
+    """Le MainWindow """
+
+    simulationLoaded = QtCore.pyqtSignal(simulation.Simulation)
 
     def __init__(self):
         super().__init__()
         MainWindow._self = self
-        self.editorWindow = None
+
+        self.setObjectName("main_window.1") # we need to bump version to override legacy
         self.setWindowState(Qt.WindowMaximized)
         self.setGeometry(100, 100, 800, 600)
         self.setWindowTitle(self.tr("ts2 - Train Signalling Simulation"))
 
-        # Simulation
+        self.editorWindow = None
         self.simulation = None
 
-        # Actions
+        ##================================================================
+        ## == Actions ==
+        ##================================================================
+
+        ## Open Action
         self.openAction = QtWidgets.QAction(self.tr("&Open..."), self)
         self.openAction.setShortcut(QtGui.QKeySequence.Open)
         self.openAction.setToolTip(self.tr("Open a simulation or a "
                                            "previously saved game"))
         self.openAction.triggered.connect(self.loadSimulation)
 
+        ## Recent
+        self.openRecentAction = QtWidgets.QAction(self.tr("Recent"), self)
+        menu = QtWidgets.QMenu()
+        self.openRecentAction.setMenu(menu)
+        menu.triggered.connect(self.on_recent)
+
+        ## Save As Action
         self.saveGameAsAction = QtWidgets.QAction(self.tr("&Save game as..."),
                                                   self)
         self.saveGameAsAction.setShortcut(QtGui.QKeySequence.SaveAs)
@@ -55,8 +70,8 @@ class MainWindow(QtWidgets.QMainWindow):
         self.saveGameAsAction.triggered.connect(self.saveGame)
         self.saveGameAsAction.setEnabled(False)
 
-        self.propertiesAction = QtWidgets.QAction(self.tr("&Properties..."),
-                                                  self)
+        ## Props Action
+        self.propertiesAction = QtWidgets.QAction(self.tr("&Properties..."), self)
         self.propertiesAction.setShortcut(
             QtGui.QKeySequence(self.tr("Ctrl+P"))
         )
@@ -64,39 +79,57 @@ class MainWindow(QtWidgets.QMainWindow):
         self.propertiesAction.triggered.connect(self.openPropertiesDialog)
         self.propertiesAction.setEnabled(False)
 
+        ##  Quit Action
         self.quitAction = QtWidgets.QAction(self.tr("&Quit"), self)
         self.quitAction.setShortcut(QtGui.QKeySequence(self.tr("Ctrl+Q")))
         self.quitAction.setToolTip(self.tr("Quit TS2"))
         self.quitAction.triggered.connect(self.close)
 
+        ## Editor Action
         self.editorAction = QtWidgets.QAction(self.tr("&Editor"), self)
         self.editorAction.setShortcut(QtGui.QKeySequence(self.tr("Ctrl+E")))
         self.editorAction.setToolTip(self.tr("Open the simulation editor"))
         self.editorAction.triggered.connect(self.openEditor)
 
+        ## About Ts2 Action
         self.aboutAction = QtWidgets.QAction(self.tr("&About TS2..."), self)
         self.aboutAction.setToolTip(self.tr("About TS2"))
         self.aboutAction.triggered.connect(self.showAboutBox)
 
+        ## About Qt Action
         self.aboutQtAction = QtWidgets.QAction(self.tr("About Qt..."), self)
         self.aboutQtAction.setToolTip(self.tr("About Qt"))
         self.aboutQtAction.triggered.connect(QtWidgets.QApplication.aboutQt)
 
-        # Menu
+        ##======================================================================
+        # Le Menu
+        ##======================================================================
+
+        ## File Menu
         self.fileMenu = self.menuBar().addMenu(self.tr("&File"))
         self.fileMenu.addAction(self.openAction)
+        self.fileMenu.addAction(self.openRecentAction)
         self.fileMenu.addAction(self.saveGameAsAction)
         self.fileMenu.addSeparator()
         self.fileMenu.addAction(self.propertiesAction)
         self.fileMenu.addSeparator()
         self.fileMenu.addAction(self.quitAction)
+
+        ## Editor Menu
         self.editorMenu = self.menuBar().addAction(self.editorAction)
+
+        ## Help Menu
         self.helpMenu = self.menuBar().addMenu(self.tr("&Help"))
         self.helpMenu.addAction(self.aboutAction)
         self.helpMenu.addAction(self.aboutQtAction)
+
         self.menuBar().setCursor(Qt.PointingHandCursor)
 
+        ##======================================================================
         # Dock Widgets
+        ##======================================================================
+
+        # Train Info Panel
         self.trainInfoPanel = QtWidgets.QDockWidget(
             self.tr("Train Information"), self
         )
@@ -121,6 +154,7 @@ class MainWindow(QtWidgets.QMainWindow):
             QtWidgets.QDockWidget.DockWidgetMovable |
             QtWidgets.QDockWidget.DockWidgetFloatable
         )
+
         self.serviceInfoView = QtWidgets.QTreeView(self)
         self.serviceInfoView.setItemsExpandable(False)
         self.serviceInfoView.setRootIsDecorated(False)
@@ -202,18 +236,24 @@ class MainWindow(QtWidgets.QMainWindow):
         # Editor
         self.editorOpened = False
 
+
+        self.refresh_recent()
+        settings.restore_window(self)
+
         # DEBUG
         # self.loadSimulation()
         # self.openEditor()
 
-    simulationLoaded = QtCore.pyqtSignal(simulation.Simulation)
+        settings.restore_window(self)
+
+
 
     @staticmethod
     def instance():
         return MainWindow._self
 
     @QtCore.pyqtSlot()
-    def loadSimulation(self):
+    def loadSimulation(self, fileName=None):
         # ## DEBUG
         # fileName = "C:\\Users\\nicolas\\Documents\\Progs\\GitHub\\ts2\\data\\drain.json"
 
@@ -421,3 +461,25 @@ class MainWindow(QtWidgets.QMainWindow):
             dialogs.ServiceAssignDialog.reassignServiceToTrain(
                 self.simulation, trainId
             )
+
+    def on_recent(self, act):
+        """Open a  recent item"""
+        self.loadSimulation( fileName=act.text() )
+
+    def refresh_recent(self):
+        """Reload the recent menu"""
+        menu = self.openRecentAction.menu()
+        menu.clear()
+        act = None
+        for file_name in settings.get_recent():
+            act = menu.addAction(file_name)
+        ## TODO - add a oopen last option
+        #if act:
+        #    self.on_recent(act)
+
+    def closeEvent( self, event ):
+
+        settings.save_window( self )
+        settings.sync()
+        print("SETTINGS SAVED")
+        super().closeEvent(event)

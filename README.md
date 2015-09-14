@@ -1,15 +1,14 @@
 # TS2 - Train Signalling Simulation
-version 0.5
 
 ## Overview
-"Train Signalling Simulation" (TS2) is a railways simulation game where you have to dispatch trains across an area and keep them on schedule. See homepage for more details.
+"Train Signalling Simulation" (TS2) is a railways simulation game where you have to dispatch trains across an area and keep them on schedule. 
 
 ## Links
-* [TS2 Homepage](http://ts2.sf.net)
-* [TS2 Project page at SourceForge.net](http://sourceforge.net/projects/ts2/)
-* [TS2 devel page on GitHub](https://gihub.com/npiganeau/ts2)
+* [TS2 Homepage](http://ts2.github.io)
+* [TS2 Code at github](http://github.com/ts2/ts2/)
 
 ## Status
+Circa late 2016, this project is switching to python3 and PyQt5
 TS2 Train Signalling Simulation is beta software, meaning it is playable, but lacks many features that one would expect from a simulation.
 TS2 is provided with two simulations:
 * A demo simulation called "drain"
@@ -23,9 +22,9 @@ New simulations can be created with the editor provided with ts2.
     - Other platforms: see source installation.
 * Source installation:
     - Download and install Python v3 or above at [www.python.org](http://www.python.org).
-    - Download and install PyQt v4.8 or above at [http://www.riverbankcomputing.co.uk](http://www.riverbankcomputing.co.uk).
+    - Download and install PyQt v5.o or above at [http://www.riverbankcomputing.co.uk](http://www.riverbankcomputing.co.uk).
     - Grab the sources from GitHub development page.
-    - Run ts2.py
+    - Run `ts2.py`
 
 ## Playing (QuickStart)
 * Load a simulation from the _simulation_ directory (or the _data_ directory if you have installed from sources).
@@ -63,44 +62,4 @@ New simulations can be created with the editor provided with ts2.
 * Scoring:
     Each time a train arrives late at a station, stops at the wrong platform or is routed to a wrong direction
     penalty points are added to the score.
-
-## Creating new simulations
-
-Simulations can be created/modified using the editor provided with ts2.
-
-## Change log
-
-###Version 0.5:
-- Improved editor including the following features 
-    - Multi-selection
-    - Copy/Paste
-    - Mass setting of properties
-    - Resizing of platform items with mouse
-- New signals with :
-    - Short length 
-    - Freely positionable berth
-    - New signal types, including UK 4 aspects signals
-
-###Version 0.4.1:
-- Fixed bug in editor: new places are now taken into account immediately
-
-###Version 0.4:
-- Added scoring system,
-- Added statistical delays to trains,
-- Added load/save game support,
-- Added an option for track system based simulation.
-
-###Version 0.3.3:
-- Added French translation
-
-###Version 0.3.2:
-- Fixed bug of trains "left behind"
-- Fixed bugs on lineItems in editor
-
-###Version 0.3.1:
-- Improved installer
-
-###Version 0.3:
-- Added simulation editor
-- Created new full-featured sim "Liverpool Street"
 

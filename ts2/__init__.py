@@ -34,9 +34,10 @@ __APP_DESCRIPTION__ = "A railway simulation game where you have to dispatch trai
 __ORG_NAME__ = "ts2 team"
 __ORG_CONTACT__ = "npiganeau"
 
-__PROJECT_DOMAIN__ = "ts2.sourceforge.net"
-__PROJECT_WWW__ = "http://ts2.sourceforge.net/"
-__PROJECT_HOME__ = "https://github.com/npiganeau/ts2"
+__PROJECT_DOMAIN__ = "ts2.github.io"
+__PROJECT_WWW__ = "http://ts2.github.io/"
+__PROJECT_HOME__ = "https://github.com/ts2/ts2"
+
 
 
 def get_info():

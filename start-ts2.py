@@ -18,7 +18,19 @@
 #   Free Software Foundation, Inc.,
 #   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #
+from __future__ import print_function
+import sys
+
+
 
 if __name__ == '__main__':
+
+    info = sys.version_info
+    if (sys.version_info > (3, 0)):
+        pass
+    else:
+        print("FATAL: TS2 requires python3")
+        sys.exit(0)
+
     import ts2.application
     ts2.application.Main()
